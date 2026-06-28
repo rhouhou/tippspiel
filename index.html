@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Matchday — World Cup 2026 Tippspiel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A111E; --panel:#111C2F; --panel-2:#0E1626; --line:#22304A; --line-soft:#1A2740;
+    --text:#EAF1FB; --muted:#8593AC; --muted-2:#5E6C85;
+    --amber:#FFC233; --pink:#FF4D8D; --green:#27D17C; --red:#FF6B6B;
+    --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:radial-gradient(1100px 540px at 50% -160px,#15233c 0%,rgba(21,35,60,0) 70%),var(--ink);
+    color:var(--text);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.45;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px 80px}
+  .topbar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,rgba(10,17,30,.96),rgba(10,17,30,.86));
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line-soft)}
+  .topbar-inner{max-width:760px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
+  .mark{display:flex;align-items:center;gap:10px;min-width:0}
+  .badge{width:34px;height:34px;border-radius:9px;flex:none;background:linear-gradient(135deg,var(--amber),#ff9f1c);
+    color:#16110a;display:grid;place-items:center;font-size:18px;box-shadow:0 4px 14px rgba(255,194,51,.35)}
+  .title{font-family:'Anton',Impact,sans-serif;letter-spacing:.5px;font-size:19px;line-height:1;text-transform:uppercase}
+  .title small{display:block;font-family:'Inter';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:var(--muted);margin-top:3px;text-transform:uppercase}
+  .topright{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .invitebtn{border:1px solid var(--line);background:var(--panel-2);color:var(--text);font-weight:700;font-size:12px;
+    padding:8px 12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:7px}
+  .invitebtn .syncdot{width:8px;height:8px;border-radius:50%;background:var(--muted-2)}
+  .invitebtn.shared .syncdot{background:var(--green);box-shadow:0 0 0 3px rgba(39,209,124,.18)}
+  .invitebtn.attn{border-color:var(--amber);color:var(--amber)}
+  .me{display:flex;align-items:center;gap:8px}
+  .me-name{font-weight:700;font-size:13px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .icobtn{border:0;background:transparent;color:var(--muted-2);cursor:pointer;font-size:13px;padding:3px 5px;border-radius:6px}
+  .icobtn:hover{color:var(--text);background:var(--panel-2)}
+  .tabs{display:flex;gap:4px;margin:18px 0 6px;background:var(--panel-2);border:1px solid var(--line-soft);padding:4px;border-radius:12px}
+  .tab{flex:1;border:0;background:transparent;color:var(--muted);font-weight:700;font-size:13px;padding:9px 8px;border-radius:9px;cursor:pointer;transition:color .15s,background .15s}
+  .tab.active{background:var(--panel);color:var(--text);box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 6px 16px rgba(0,0,0,.25)}
+  .banner{margin:14px 0 0;padding:12px 14px;border-radius:12px;border:1px solid var(--amber);background:rgba(255,194,51,.08);font-size:13px;color:var(--text);display:flex;gap:10px;align-items:center}
+  .banner b{color:var(--amber)}
+  .banner button{margin-left:auto;border:0;background:var(--amber);color:#16110a;font-weight:800;font-size:12px;padding:8px 12px;border-radius:9px;cursor:pointer;white-space:nowrap}
+  .filterbar{display:flex;align-items:center;gap:8px;margin:16px 2px 10px;flex-wrap:wrap}
+  .seg{display:flex;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:10px;padding:3px}
+  .seg button{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer}
+  .seg button.on{background:var(--panel);color:var(--text)}
+  .addbtn{margin-left:auto;border:1px dashed var(--line);background:transparent;color:var(--amber);font-weight:700;font-size:12.5px;padding:8px 12px;border-radius:10px;cursor:pointer}
+  .addbtn:hover{border-color:var(--amber)}
+  .daterow{display:flex;align-items:center;gap:10px;margin:22px 2px 10px}
+  .daterow .d-eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--muted-2);text-transform:uppercase}
+  .daterow .d-main{font-family:'Anton',sans-serif;font-size:15px;letter-spacing:.4px;text-transform:uppercase}
+  .daterow .line{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .match{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+  .match.locked{border-color:var(--line)}
+  .m-top{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line-soft);font-size:11.5px;color:var(--muted)}
+  .m-time{font-family:'Space Mono',monospace}
+  .chip{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:6px}
+  .chip.open{background:rgba(39,209,124,.12);color:var(--green)}
+  .chip.live{background:rgba(255,77,141,.14);color:var(--pink)}
+  .chip.done{background:rgba(133,147,172,.14);color:var(--muted)}
+  .m-tools{margin-left:auto;display:flex;gap:4px}
+  .m-body{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:16px 14px}
+  .team{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0}
+  .team .flag{font-size:30px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+  .team .name{font-weight:700;font-size:13.5px}
+  .team .code{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted-2);letter-spacing:.12em}
+  .score{display:flex;align-items:center;gap:8px}
+  .score input{width:54px;height:60px;text-align:center;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;color:var(--text);font-family:'Space Mono',monospace;font-weight:700;font-size:26px;outline:none;transition:border-color .15s,box-shadow .15s}
+  .score input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,194,51,.18)}
+  .score .dash{color:var(--muted-2);font-family:'Anton',sans-serif;font-size:20px}
+  .score .final{width:54px;height:60px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;font-family:'Space Mono',monospace;font-weight:700;font-size:26px}
+  .scorewrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .advpick{width:100%}
+  .advrow{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+  .advlbl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2);font-weight:800}
+  .advb{border:1px solid var(--line);background:var(--panel-2);color:var(--muted);font-family:'Space Mono',monospace;font-weight:700;font-size:12px;padding:5px 10px;border-radius:8px;cursor:pointer}
+  .advb.on{border-color:var(--amber);color:var(--amber);background:rgba(255,194,51,.1)}
+  .m-foot{padding:0 14px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .savebtn{border:0;background:var(--amber);color:#16110a;font-weight:800;font-size:13px;padding:10px 18px;border-radius:10px;cursor:pointer;box-shadow:0 6px 16px rgba(255,194,51,.25)}
+  .savebtn.saved{background:var(--green);color:#06210f}
+  .hint{font-size:12px;color:var(--muted)}
+  .yourpred{font-size:12px;color:var(--muted)}
+  .yourpred b{font-family:'Space Mono',monospace;color:var(--text)}
+  .pts-pill{font-weight:800;font-size:12px;padding:5px 9px;border-radius:8px;font-family:'Space Mono',monospace}
+  .pts-3{background:rgba(255,194,51,.16);color:var(--amber)}
+  .pts-1{background:rgba(39,209,124,.14);color:var(--green)}
+  .pts-0{background:rgba(133,147,172,.12);color:var(--muted)}
+  .reveal{border-top:1px dashed var(--line-soft);padding:12px 14px;background:var(--panel-2)}
+  .reveal h4{margin:0 0 8px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);font-weight:800}
+  .tiprow{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:13px}
+  .tiprow .nm{color:var(--text);font-weight:600}
+  .tiprow .sc{font-family:'Space Mono',monospace;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .tiprow .sc .p{font-weight:700;color:var(--text)}
+  .locktip{font-size:12px;color:var(--muted-2)}
+  .lb{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden}
+  .lb-head,.lb-row{display:grid;grid-template-columns:34px 1fr 46px 46px 64px;align-items:center;gap:6px;padding:12px 14px}
+  .lb-head{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);font-weight:800;border-bottom:1px solid var(--line-soft)}
+  .lb-head .r{text-align:center}
+  .lb-row{border-bottom:1px solid var(--line-soft)}
+  .lb-row:last-child{border-bottom:0}
+  .lb-row.you{background:linear-gradient(90deg,rgba(255,194,51,.07),transparent)}
+  .lb-rank{font-family:'Anton',sans-serif;font-size:18px;text-align:center;color:var(--muted-2)}
+  .lb-row.top .lb-rank{color:var(--amber)}
+  .lb-name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px;min-width:0}
+  .lb-name .you-tag{font-size:9px;font-weight:800;letter-spacing:.08em;color:#16110a;background:var(--amber);padding:2px 5px;border-radius:5px}
+  .lb-name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lb-cell{font-family:'Space Mono',monospace;text-align:center;font-size:13px;color:var(--muted)}
+  .lb-total{font-family:'Space Mono',monospace;text-align:center;font-weight:700;font-size:17px;color:var(--amber)}
+  .lb-legend{display:flex;gap:14px;flex-wrap:wrap;margin:14px 4px;font-size:12px;color:var(--muted)}
+  .lb-legend b{color:var(--text)}
+  .lb-legend .k{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+  .empty{text-align:center;color:var(--muted);padding:48px 20px;border:1px dashed var(--line);border-radius:var(--radius)}
+  .empty .big{font-family:'Anton',sans-serif;font-size:18px;color:var(--text);margin-bottom:6px;text-transform:uppercase}
+  .overlay{position:fixed;inset:0;background:rgba(5,9,16,.72);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px;z-index:60}
+  .modal{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:var(--shadow);max-height:90vh;overflow:auto}
+  .modal h2{font-family:'Anton',sans-serif;font-size:24px;margin:0 0 4px;text-transform:uppercase;letter-spacing:.5px}
+  .modal p{margin:0 0 18px;color:var(--muted);font-size:13.5px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);font-weight:800;margin-bottom:6px}
+  .field input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:'Inter';font-size:15px;padding:12px 14px;outline:none}
+  .field input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,194,51,.16)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn-primary{width:100%;border:0;background:var(--amber);color:#16110a;font-weight:800;font-size:15px;padding:13px;border-radius:11px;cursor:pointer;margin-top:4px}
+  .btn-ghost{width:100%;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:13px;padding:10px;border-radius:10px;cursor:pointer;margin-top:10px}
+  .knownlist{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .knownlist button{border:1px solid var(--line);background:var(--panel-2);color:var(--text);font-weight:600;font-size:13px;padding:7px 12px;border-radius:999px;cursor:pointer}
+  .knownlist button:hover{border-color:var(--amber);color:var(--amber)}
+  .linkbox{display:flex;gap:8px;margin-top:8px}
+  .linkbox input{flex:1;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:11px 12px}
+  .linkbox button{border:0;background:var(--amber);color:#16110a;font-weight:800;font-size:13px;padding:0 16px;border-radius:10px;cursor:pointer}
+  .note{font-size:12px;color:var(--muted-2);line-height:1.6;margin-top:12px}
+  .note.warn{color:var(--amber)}
+  .steps{margin:0 0 4px;padding-left:18px;font-size:13px;color:var(--text);line-height:1.7}
+  .steps code{font-family:'Space Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:4px;font-size:12px}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--panel);border:1px solid var(--line);color:var(--text);font-size:13px;font-weight:600;padding:11px 18px;border-radius:11px;box-shadow:var(--shadow);z-index:80;transition:opacity .2s,transform .2s;pointer-events:none;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{border-color:var(--red)}
+  .footer{margin-top:30px;text-align:center;font-size:11.5px;color:var(--muted-2);line-height:1.7}
+  .footer code{font-family:'Space Mono',monospace;color:var(--muted)}
+  @media (max-width:430px){
+    .lb-head,.lb-row{grid-template-columns:28px 1fr 38px 38px 54px}
+    .score input,.score .final{width:48px;height:54px;font-size:22px}
+    .team .flag{font-size:26px}.me-name{max-width:64px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="topbar"><div class="topbar-inner">
+    <div class="mark"><div class="badge">🏆</div><div class="title">Matchday<small>World Cup 2026 · Tippspiel</small></div></div>
+    <div class="topright" id="topright" style="display:none">
+      <button class="invitebtn" id="inviteBtn"><span class="syncdot"></span><span id="inviteLabel">Share</span></button>
+      <div class="me"><span class="me-name" id="meName"></span><button class="icobtn" id="changeMe" title="Change player">↻</button></div>
+    </div>
+  </div></div>
+  <div class="wrap">
+    <div class="tabs" id="tabs" style="display:none">
+      <button class="tab active" data-tab="matches">Matches</button>
+      <button class="tab" data-tab="board">Leaderboard</button>
+    </div>
+    <div id="view"></div>
+    <div class="footer" id="footer"></div>
+  </div>
+  <div id="overlayRoot"></div>
+  <div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+/* ============================================================
+   1) PASTE YOUR FIREBASE CONFIG HERE
+   Get it from the Firebase console → Project settings → "Your apps"
+   → Web app → Config. Replace every PASTE_HERE below. Make sure
+   databaseURL is included (create the Realtime Database first).
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey:        "PASTE_HERE",
+  authDomain:    "PASTE_HERE",
+  databaseURL:   "PASTE_HERE",
+  projectId:     "PASTE_HERE",
+  storageBucket: "PASTE_HERE",
+  messagingSenderId: "PASTE_HERE",
+  appId:         "PASTE_HERE"
+};
+/* ============================================================ */
+
+const configured = FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.includes("PASTE") && !!FIREBASE_CONFIG.databaseURL && !FIREBASE_CONFIG.databaseURL.includes("PASTE");
+
+// room lets you run more than one separate pool from the same page (#r=code)
+const room = (location.hash.match(/[#&]r=([A-Za-z0-9_\-]+)/)||[])[1] || 'main';
+
+let db=null, roomRef=null;
+if(configured){
+  try{ const app=initializeApp(FIREBASE_CONFIG); db=getDatabase(app); roomRef=ref(db,'rooms/'+room); }
+  catch(e){ console.error(e); }
+}
+
+/* ---------- tiny data layer (Firebase when configured, else this device) ---------- */
+const Local = {
+  read(){ try{return JSON.parse(localStorage.getItem('wc_fb_'+room))||{};}catch(e){return {};} },
+  write(v){ localStorage.setItem('wc_fb_'+room, JSON.stringify(v)); if(onState) onState(v); }
+};
+let onState=null;
+function subscribe(cb){
+  onState=cb;
+  if(db){ onValue(roomRef, snap=>cb(snap.val()||{}), err=>{ console.error(err); toast('Database error — check your config & rules',true); }); }
+  else { cb(Local.read()); }
+}
+async function putMatch(id,o){ if(db) return set(ref(db,`rooms/${room}/matches/${id}`),o); const v=Local.read(); (v.matches||(v.matches={}))[id]=o; Local.write(v); }
+async function dropMatch(id){ if(db){ await remove(ref(db,`rooms/${room}/matches/${id}`)); await remove(ref(db,`rooms/${room}/preds/${id}`)); return; } const v=Local.read(); if(v.matches)delete v.matches[id]; if(v.preds)delete v.preds[id]; Local.write(v); }
+async function putPred(mid,pid,o){ if(db) return set(ref(db,`rooms/${room}/preds/${mid}/${pid}`),o); const v=Local.read(); ((v.preds||(v.preds={}))[mid]||(v.preds[mid]={}))[pid]=o; Local.write(v); }
+async function putPlayer(id,name){ if(db) return set(ref(db,`rooms/${room}/players/${id}`),name); const v=Local.read(); (v.players||(v.players={}))[id]=name; Local.write(v); }
+
+/* ============================================================
+   FIXTURES — real World Cup 2026 Round of 32 (UTC; shown local)
+   ============================================================ */
+const FLAGS={
+  "South Africa":["🇿🇦","RSA"],"Canada":["🇨🇦","CAN"],"Brazil":["🇧🇷","BRA"],"Japan":["🇯🇵","JPN"],
+  "Germany":["🇩🇪","GER"],"Paraguay":["🇵🇾","PAR"],"Netherlands":["🇳🇱","NED"],"Morocco":["🇲🇦","MAR"],
+  "Ivory Coast":["🇨🇮","CIV"],"Norway":["🇳🇴","NOR"],"France":["🇫🇷","FRA"],"Sweden":["🇸🇪","SWE"],
+  "Mexico":["🇲🇽","MEX"],"Ecuador":["🇪🇨","ECU"],"England":["🏴","ENG"],"Argentina":["🇦🇷","ARG"],
+  "Spain":["🇪🇸","ESP"],"USA":["🇺🇸","USA"],"Portugal":["🇵🇹","POR"],"Belgium":["🇧🇪","BEL"],"Croatia":["🇭🇷","CRO"],"Uruguay":["🇺🇾","URU"]
+};
+const flagOf=n=>(FLAGS[n]&&FLAGS[n][0])||"⚽";
+const codeOf=n=>(FLAGS[n]&&FLAGS[n][1])||String(n).slice(0,3).toUpperCase();
+const SEED=[
+  {id:"s1",home:"South Africa",away:"Canada",  kickoff:"2026-06-28T19:00:00Z"},
+  {id:"s2",home:"Brazil",      away:"Japan",   kickoff:"2026-06-29T17:00:00Z"},
+  {id:"s3",home:"Germany",     away:"Paraguay",kickoff:"2026-06-29T20:30:00Z"},
+  {id:"s4",home:"Netherlands", away:"Morocco", kickoff:"2026-06-30T01:00:00Z"},
+  {id:"s5",home:"Ivory Coast", away:"Norway",  kickoff:"2026-06-30T17:00:00Z"},
+  {id:"s6",home:"France",      away:"Sweden",  kickoff:"2026-06-30T21:00:00Z"}
+];
+
+/* ============================================================ STATE ============================================================ */
+let me=null, players=[], matches=[], predictions={}, activeTab='matches', filter='all', pendingRender=false, firstSnap=true, advSel={}, resSel=null;
+const uid=()=>(crypto.randomUUID?crypto.randomUUID():'id'+Date.now()+Math.random().toString(16).slice(2));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg,isErr){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(isErr?' err':'');clearTimeout(t._t);t._t=setTimeout(()=>{t.className='toast'+(isErr?' err':'');},3200);}
+
+/* ============================================================ SNAPSHOT -> STATE ============================================================ */
+function applyState(v){
+  matches=Object.entries(v.matches||{}).map(([id,o])=>({id,home:o.home,away:o.away,kickoff:o.kickoff,hs:(o.hs??null),as:(o.as??null),adv:(o.adv??null)}));
+  players=Object.entries(v.players||{}).map(([id,name])=>({id,name:String(name)}));
+  predictions={};
+  for(const [mid,pp] of Object.entries(v.preds||{})){ predictions[mid]={}; for(const [pid,o] of Object.entries(pp||{})){ const t={h:o.h,a:o.a}; if(o.adv)t.adv=o.adv; predictions[mid][pid]=t; } }
+}
+function busy(){ const ae=document.activeElement; return (ae&&ae.tagName==='INPUT')||!!document.getElementById('ov'); }
+function safeRender(){ if(busy()){ pendingRender=true; return; } render(); }
+
+/* ============================================================ TIME / SCORING ============================================================ */
+const koMs=m=>new Date(m.kickoff).getTime();
+const isLocked=m=>Date.now()>=koMs(m);
+const hasResult=m=>m.hs!=null&&m.as!=null;
+const fmtTime=iso=>new Date(iso).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+const dayKey=iso=>new Date(iso).toLocaleDateString([], {weekday:'long',day:'numeric',month:'long'});
+const sign=n=>n>0?1:(n<0?-1:0);
+function pointsFor(p,m){ if(!p||!hasResult(m))return null; if(p.h===m.hs&&p.a===m.as)return 3; return sign(p.h-p.a)===sign(m.hs-m.as)?1:0; }
+function bonusFor(p,m){ // +1 only on draws: player tipped a draw AND picked the team that advanced
+  if(!p||!hasResult(m)) return 0;
+  if(m.hs!==m.as) return 0;      // not a draw
+  if(!m.adv) return 0;           // host hasn't said who advanced
+  if(p.h!==p.a) return 0;        // player didn't tip a draw
+  if(!p.adv) return 0;           // player didn't pick a team
+  return p.adv===m.adv ? 1 : 0;
+}
+function totalPts(p,m){ const b=pointsFor(p,m); return b==null?null:b+bonusFor(p,m); }
+const advTeam=(m,adv)=>adv==='home'?m.home:m.away;
+function advButtonsHTML(m,sel){
+  return `<div class="advrow"><span class="advlbl">Wins on pens</span>
+    <button class="advb ${sel==='home'?'on':''}" data-adv="home">${codeOf(m.home)}</button>
+    <button class="advb ${sel==='away'?'on':''}" data-adv="away">${codeOf(m.away)}</button></div>`;
+}
+
+/* ============================================================ RENDER ============================================================ */
+function render(){
+  document.getElementById('view').innerHTML = activeTab==='matches'?matchesView():boardView();
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===activeTab));
+  const ib=document.getElementById('inviteBtn'), il=document.getElementById('inviteLabel');
+  if(db){ ib.classList.add('shared'); ib.classList.remove('attn'); il.textContent='Invite'; }
+  else { ib.classList.remove('shared'); ib.classList.add('attn'); il.textContent='Set up'; }
+  if(activeTab==='matches') wireMatches();
+  document.getElementById('footer').innerHTML = db
+    ? `Shared & live · friends just open your link, no sign-up. &nbsp;3&nbsp;pts exact score · 1&nbsp;pt right result.`
+    : `Not shared yet — add your Firebase config to the file. This device only for now. &nbsp;3&nbsp;pts exact · 1&nbsp;pt right.`;
+}
+function matchesView(){
+  let list=matches.slice().sort((a,b)=>koMs(a)-koMs(b));
+  if(filter==='open')list=list.filter(m=>!isLocked(m));
+  if(filter==='done')list=list.filter(hasResult);
+  let html = !db ? `<div class="banner"><span><b>Almost there —</b> paste your Firebase config into the file to switch on the shared leaderboard.</span><button id="bannerHelp">How</button></div>` : '';
+  html+=`<div class="filterbar"><div class="seg">
+      <button data-f="all" class="${filter==='all'?'on':''}">All</button>
+      <button data-f="open" class="${filter==='open'?'on':''}">Open</button>
+      <button data-f="done" class="${filter==='done'?'on':''}">Done</button></div>
+    <button class="addbtn" id="addMatch">＋ Add match</button></div>`;
+  if(list.length===0){ html+=`<div class="empty"><div class="big">No matches here</div>Add a fixture or switch the filter.</div>`; return html; }
+  let lastDay='';
+  for(const m of list){ const dk=dayKey(m.kickoff);
+    if(dk!==lastDay){ lastDay=dk; const p=dk.split(',');
+      html+=`<div class="daterow"><span class="d-eyebrow">${esc(p[0])}</span><span class="d-main">${esc(p.slice(1).join(',').trim())}</span><span class="line"></span></div>`; }
+    html+=matchCard(m); }
+  return html;
+}
+function matchCard(m){
+  const locked=isLocked(m),done=hasResult(m),myPred=predictions[m.id]?.[me.id];
+  const chip=done?`<span class="chip done">Full time</span>`:locked?`<span class="chip live">Locked</span>`:`<span class="chip open">Open</span>`;
+  let scoreBlock;
+  if(!locked){ advSel[m.id] = (myPred&&myPred.h===myPred.a) ? (myPred.adv||null) : (advSel[m.id]||null);
+    const showAdv = myPred && myPred.h!=null && myPred.a!=null && myPred.h===myPred.a;
+    scoreBlock=`<div class="scorewrap"><div class="score">
+      <input type="number" inputmode="numeric" min="0" max="99" id="h_${m.id}" value="${myPred?myPred.h:''}" aria-label="${esc(m.home)} score">
+      <span class="dash">:</span>
+      <input type="number" inputmode="numeric" min="0" max="99" id="a_${m.id}" value="${myPred?myPred.a:''}" aria-label="${esc(m.away)} score"></div>
+      <div class="advpick" id="adv_${m.id}" style="display:${showAdv?'block':'none'}">${advButtonsHTML(m, advSel[m.id])}</div></div>`;
+  } else { const h=done?m.hs:'·',a=done?m.as:'·'; scoreBlock=`<div class="score"><div class="final">${h}</div><span class="dash">:</span><div class="final">${a}</div></div>`; }
+  let foot;
+  if(!locked){ foot=`<div class="m-foot"><button class="savebtn ${myPred?'saved':''}" id="save_${m.id}">${myPred?'Saved ✓':'Save tip'}</button>
+      <span class="hint">${myPred?'Edit any time before kick-off.':'Predict the score before kick-off.'}</span></div>`;
+  } else {
+    const myAdvTxt = (myPred && myPred.h===myPred.a && myPred.adv) ? ` → ${esc(codeOf(advTeam(m,myPred.adv)))}` : '';
+    let yp=myPred?`<span class="yourpred">Your tip: <b>${myPred.h}:${myPred.a}${myAdvTxt}</b></span>`:`<span class="yourpred">No tip submitted</span>`;
+    let pp=''; if(done&&myPred){const p=totalPts(myPred,m); pp=`<span class="pts-pill pts-${pointsFor(myPred,m)}">+${p} pt${p===1?'':'s'}</span>`;}
+    let rb=done?`<button class="icobtn" id="res_${m.id}" style="margin-left:auto">Edit result</button>`:`<button class="addbtn" id="res_${m.id}" style="margin-left:auto">＋ Enter result</button>`;
+    foot=`<div class="m-foot">${yp}${pp}${rb}</div>`;
+  }
+  let reveal='';
+  if(locked){ const tips=predictions[m.id]||{};
+    const rows=players.map(p=>{const t=tips[p.id]; if(!t)return ''; const tot=totalPts(t,m);
+      const tag=(tot!=null)?`<span class="pts-pill pts-${pointsFor(t,m)}">+${tot}</span>`:'';
+      const advTxt=(t.h===t.a&&t.adv)?` → ${esc(codeOf(advTeam(m,t.adv)))}`:'';
+      return `<div class="tiprow"><span class="nm">${esc(p.name)}${p.id===me.id?' · you':''}</span><span class="sc"><span class="p">${t.h}:${t.a}${advTxt}</span>${tag}</span></div>`;
+    }).filter(Boolean).join('');
+    reveal=`<div class="reveal"><h4>Everyone's tips</h4>${rows||'<div class="locktip">No tips were submitted.</div>'}</div>`;
+  }
+  return `<div class="match ${locked?'locked':''}">
+    <div class="m-top"><span class="m-time">${fmtTime(m.kickoff)}</span>${chip}
+      <div class="m-tools"><button class="icobtn" id="edit_${m.id}" title="Edit">✎</button><button class="icobtn" id="del_${m.id}" title="Delete">🗑</button></div></div>
+    <div class="m-body">
+      <div class="team"><span class="flag">${flagOf(m.home)}</span><span class="name">${esc(m.home)}</span><span class="code">${codeOf(m.home)}</span></div>
+      ${scoreBlock}
+      <div class="team"><span class="flag">${flagOf(m.away)}</span><span class="name">${esc(m.away)}</span><span class="code">${codeOf(m.away)}</span></div>
+    </div>${foot}${reveal}</div>`;
+}
+function wireMatches(){
+  document.getElementById('bannerHelp')?.addEventListener('click', setupModal);
+  document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{filter=b.dataset.f;render();});
+  document.getElementById('addMatch')?.addEventListener('click', ()=>matchModal());
+  matches.forEach(m=>{
+    document.getElementById('save_'+m.id)?.addEventListener('click', ()=>saveTip(m.id));
+    document.getElementById('edit_'+m.id)?.addEventListener('click', ()=>matchModal(m));
+    document.getElementById('del_'+m.id)?.addEventListener('click', ()=>delMatch(m.id));
+    document.getElementById('res_'+m.id)?.addEventListener('click', ()=>resultModal(m));
+    ['h_'+m.id,'a_'+m.id].forEach(id=>{const el=document.getElementById(id); if(el)el.addEventListener('input',()=>{const b=document.getElementById('save_'+m.id); if(b){b.classList.remove('saved');b.textContent='Save tip';} updateAdvVisibility(m);});});
+    const advBox=document.getElementById('adv_'+m.id);
+    if(advBox) advBox.querySelectorAll('[data-adv]').forEach(btn=>btn.onclick=()=>{
+      advSel[m.id]=btn.dataset.adv;
+      advBox.querySelectorAll('[data-adv]').forEach(b=>b.classList.toggle('on',b.dataset.adv===advSel[m.id]));
+      const sb=document.getElementById('save_'+m.id); if(sb){sb.classList.remove('saved');sb.textContent='Save tip';}
+    });
+  });
+}
+function updateAdvVisibility(m){
+  const hv=document.getElementById('h_'+m.id), av=document.getElementById('a_'+m.id), box=document.getElementById('adv_'+m.id);
+  if(!hv||!av||!box) return;
+  const h=parseInt(hv.value,10), a=parseInt(av.value,10);
+  box.style.display=(!isNaN(h)&&!isNaN(a)&&h===a)?'block':'none';
+}
+async function saveTip(matchId){
+  const h=parseInt(document.getElementById('h_'+matchId).value,10), a=parseInt(document.getElementById('a_'+matchId).value,10);
+  if(isNaN(h)||isNaN(a)||h<0||a<0){toast('Enter a score for both teams',true);return;}
+  const isDraw=h===a;
+  const adv=isDraw ? (advSel[matchId]||predictions[matchId]?.[me.id]?.adv||null) : null;
+  const pred={h,a}; if(adv)pred.adv=adv;
+  try{ await putPred(matchId,me.id,pred); (predictions[matchId]||(predictions[matchId]={}))[me.id]=pred;
+    const b=document.getElementById('save_'+matchId); if(b){b.classList.add('saved');b.textContent='Saved ✓';}
+    toast(isDraw&&!adv?'Saved — tap a team for the penalty bonus':'Tip saved'); }
+  catch(e){ toast('Could not save — check connection',true); }
+}
+async function delMatch(matchId){
+  if(!confirm('Delete this match and its tips?'))return;
+  try{ await dropMatch(matchId); matches=matches.filter(m=>m.id!==matchId); delete predictions[matchId]; render(); toast('Match deleted'); }
+  catch(e){ toast('Could not delete',true); }
+}
+function boardRows(){
+  return players.map(p=>{ let pts=0,exact=0,correct=0,played=0;
+    for(const m of matches){ if(!hasResult(m))continue; const t=predictions[m.id]?.[p.id]; if(!t)continue; played++; const base=pointsFor(t,m); pts+=totalPts(t,m); if(base===3)exact++; else if(base===1)correct++; }
+    return {id:p.id,name:p.name,pts,exact,correct,played};
+  }).sort((a,b)=>b.pts-a.pts||b.exact-a.exact||a.name.localeCompare(b.name));
+}
+function boardView(){
+  const rows=boardRows();
+  if(players.length===0)return `<div class="empty"><div class="big">No players yet</div>Share the link with your friends and have them add their name.</div>`;
+  const anyResult=matches.some(hasResult);
+  const body=rows.map((r,i)=>{const top=i===0&&r.pts>0;
+    return `<div class="lb-row ${r.id===me.id?'you':''} ${top?'top':''}"><div class="lb-rank">${i+1}</div>
+      <div class="lb-name"><span class="nm">${esc(r.name)}</span>${r.id===me.id?'<span class="you-tag">YOU</span>':''}</div>
+      <div class="lb-cell">${r.exact}</div><div class="lb-cell">${r.correct}</div><div class="lb-total">${r.pts}</div></div>`;}).join('');
+  return `<div class="lb"><div class="lb-head"><div class="r">#</div><div>Player</div><div class="r">Exact</div><div class="r">Right</div><div class="r">Pts</div></div>${body}</div>
+    <div class="lb-legend"><span><span class="k" style="background:var(--amber)"></span><b>Exact</b> — perfect scoreline (3 pts)</span>
+      <span><span class="k" style="background:var(--green)"></span><b>Right</b> — correct win/draw/loss (1 pt)</span></div>
+    ${anyResult?'':'<div class="footer" style="margin-top:10px">Points appear once results are entered on finished matches.</div>'}`;
+}
+
+/* ============================================================ MODALS ============================================================ */
+function overlay(html){const root=document.getElementById('overlayRoot');root.innerHTML=`<div class="overlay" id="ov">${html}</div>`;
+  document.getElementById('ov').addEventListener('mousedown',e=>{if(e.target.id==='ov')closeOverlay();});}
+function closeOverlay(){document.getElementById('overlayRoot').innerHTML='';if(pendingRender){pendingRender=false;render();}}
+function nameGate(){
+  const known=players.length?`<p style="margin-top:18px;margin-bottom:6px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);font-weight:800">Already playing?</p>
+    <div class="knownlist">${players.map(p=>`<button data-pid="${p.id}">${esc(p.name)}</button>`).join('')}</div>`:'';
+  overlay(`<div class="modal"><h2>Who's tipping?</h2><p>Enter your name to join. No password, no sign-up.</p>
+    <div class="field"><label>Your name</label><input id="nameInput" placeholder="e.g. Rola" autocomplete="off" maxlength="24"></div>
+    <button class="btn-primary" id="joinBtn">Start tipping</button>${known}</div>`);
+  const input=document.getElementById('nameInput'); input.focus();
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')join();});
+  document.getElementById('joinBtn').onclick=join;
+  document.querySelectorAll('[data-pid]').forEach(b=>b.onclick=()=>pickPlayer(b.dataset.pid));
+}
+async function join(){
+  const name=(document.getElementById('nameInput').value||'').trim(); if(!name){document.getElementById('nameInput').focus();return;}
+  let existing=players.find(p=>p.name.toLowerCase()===name.toLowerCase());
+  if(!existing){ existing={id:uid(),name}; try{await putPlayer(existing.id,name);}catch(e){} players.push(existing); }
+  setMe(existing);
+}
+async function pickPlayer(pid){const p=players.find(x=>x.id===pid); if(p)setMe(p);}
+function setMe(p){ me=p; localStorage.setItem('wc_me_'+room,JSON.stringify(me)); closeOverlay();
+  document.getElementById('topright').style.display='flex'; document.getElementById('meName').textContent=me.name;
+  document.getElementById('tabs').style.display='flex'; render(); }
+
+function shareModal(){
+  if(!db){ setupModal(); return; }
+  const link=location.origin+location.pathname+(room!=='main'?('#r='+room):'');
+  overlay(`<div class="modal"><h2>Invite your friends</h2><p>Send this link. They open it, type a name, and start tipping — no sign-up.</p>
+    <div class="field"><label>Invite link</label><div class="linkbox"><input id="lnk" value="${esc(link)}" readonly><button id="copyLnk">Copy</button></div></div>
+    <p class="note">Everyone on this link shares the same matches, tips, and leaderboard, updating live.</p></div>`);
+  document.getElementById('copyLnk').onclick=()=>{const el=document.getElementById('lnk');el.select();navigator.clipboard?.writeText(el.value).then(()=>toast('Link copied')).catch(()=>toast('Select & copy the link'));};
+}
+function setupModal(){
+  overlay(`<div class="modal"><h2>Switch on sharing</h2><p>One-time, ~5 minutes, with your existing Google account. Your friends never sign up.</p>
+    <ol class="steps">
+      <li>Open <code>console.firebase.google.com</code> and sign in with Google.</li>
+      <li><b>Add project</b> → name it (e.g. tippspiel) → you can skip Analytics.</li>
+      <li>In the left menu: <b>Build → Realtime Database → Create Database</b> → pick a location → <b>Start in test mode</b>.</li>
+      <li>Open the <b>Rules</b> tab and set both to allow access:<br><code>{ "rules": { ".read": true, ".write": true } }</code> → Publish.</li>
+      <li>Project settings (gear) → <b>Your apps</b> → Web <b>&lt;/&gt;</b> → register → copy the <code>firebaseConfig</code> values.</li>
+      <li>Paste them into the top of this file (the <code>FIREBASE_CONFIG</code> block), then re-upload <code>index.html</code> to GitHub.</li>
+    </ol>
+    <p class="note warn">The open rule means anyone with your site link can play & edit — fine for a friends' pool; just don't post it publicly.</p>
+    <button class="btn-ghost" id="closeSetup">Got it</button></div>`);
+  document.getElementById('closeSetup').onclick=closeOverlay;
+}
+
+function matchModal(m){
+  const editing=!!m; let dPart='',tPart='';
+  if(editing){const d=new Date(m.kickoff),pad=n=>String(n).padStart(2,'0');
+    dPart=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; tPart=`${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+  overlay(`<div class="modal"><h2>${editing?'Edit match':'Add match'}</h2><p>Times are in your local timezone.</p>
+    <div class="field"><label>Home team</label><input id="mh" value="${editing?esc(m.home):''}" placeholder="e.g. Mexico" maxlength="28"></div>
+    <div class="field"><label>Away team</label><input id="ma" value="${editing?esc(m.away):''}" placeholder="e.g. Ecuador" maxlength="28"></div>
+    <div class="row2"><div class="field"><label>Date</label><input id="md" type="date" value="${dPart}"></div>
+      <div class="field"><label>Kick-off</label><input id="mt" type="time" value="${tPart}"></div></div>
+    <button class="btn-primary" id="saveMatch">${editing?'Save changes':'Add match'}</button>
+    <button class="btn-ghost" id="cancelMatch">Cancel</button></div>`);
+  document.getElementById('cancelMatch').onclick=closeOverlay;
+  document.getElementById('saveMatch').onclick=async()=>{
+    const home=document.getElementById('mh').value.trim(),away=document.getElementById('ma').value.trim();
+    const d=document.getElementById('md').value,t=document.getElementById('mt').value;
+    if(!home||!away||!d||!t){toast('Fill in teams, date and time',true);return;}
+    const iso=new Date(`${d}T${t}`).toISOString();
+    try{
+      if(editing){ await putMatch(m.id,{home,away,kickoff:iso,hs:m.hs,as:m.as,adv:m.adv||null}); }
+      else { await putMatch(uid(),{home,away,kickoff:iso,hs:null,as:null}); }
+      closeOverlay(); toast('Saved');
+    }catch(e){ toast('Could not save match',true); }
+  };
+}
+function resultModal(m){
+  resSel = m.adv||null;
+  overlay(`<div class="modal"><h2>Final score</h2><p>${esc(m.home)} vs ${esc(m.away)}. This decides everyone's points.</p>
+    <div class="row2"><div class="field"><label>${esc(codeOf(m.home))}</label><input id="rh" type="number" inputmode="numeric" min="0" max="99" value="${m.hs!=null?m.hs:''}"></div>
+      <div class="field"><label>${esc(codeOf(m.away))}</label><input id="ra" type="number" inputmode="numeric" min="0" max="99" value="${m.as!=null?m.as:''}"></div></div>
+    <div class="advpick" id="resadv" style="display:${(m.hs!=null&&m.hs===m.as)?'block':'none'};margin-bottom:14px">${advButtonsHTML(m, resSel)}</div>
+    <button class="btn-primary" id="saveRes">Save result</button>
+    ${hasResult(m)?'<button class="btn-ghost" id="clearRes">Clear result</button>':''}</div>`);
+  const rh=document.getElementById('rh'), ra=document.getElementById('ra'), box=document.getElementById('resadv');
+  function upd(){ const h=parseInt(rh.value,10),a=parseInt(ra.value,10); box.style.display=(!isNaN(h)&&!isNaN(a)&&h===a)?'block':'none'; }
+  rh.addEventListener('input',upd); ra.addEventListener('input',upd);
+  box.querySelectorAll('[data-adv]').forEach(btn=>btn.onclick=()=>{ resSel=btn.dataset.adv; box.querySelectorAll('[data-adv]').forEach(b=>b.classList.toggle('on',b.dataset.adv===resSel)); });
+  document.getElementById('saveRes').onclick=async()=>{
+    const h=parseInt(rh.value,10),a=parseInt(ra.value,10);
+    if(isNaN(h)||isNaN(a)||h<0||a<0){toast('Enter both scores',true);return;}
+    const adv=(h===a)?(resSel||null):null;
+    if(h===a&&!adv){toast('Pick which team advanced on penalties',true);return;}
+    try{ await putMatch(m.id,{home:m.home,away:m.away,kickoff:m.kickoff,hs:h,as:a,adv}); closeOverlay(); toast('Result saved'); }
+    catch(e){ toast('Could not save result',true); }
+  };
+  document.getElementById('clearRes')?.addEventListener('click',async()=>{
+    try{ await putMatch(m.id,{home:m.home,away:m.away,kickoff:m.kickoff,hs:null,as:null,adv:null}); closeOverlay(); }catch(e){}
+  });
+}
+
+/* ============================================================ BOOT ============================================================ */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{activeTab=t.dataset.tab;render();});
+document.getElementById('changeMe').onclick=()=>nameGate();
+document.getElementById('inviteBtn').onclick=shareModal;
+document.addEventListener('focusout',()=>{ if(pendingRender && !busy()){ pendingRender=false; render(); } });
+
+let seeding=false;
+subscribe(async v=>{
+  applyState(v);
+  if(matches.length===0 && !seeding){ seeding=true;
+    try{ for(const s of SEED){ await putMatch(s.id,{home:s.home,away:s.away,kickoff:s.kickoff,hs:null,as:null}); } }catch(e){}
+    seeding=false;
+    if(!db){ return; } // local: write() already re-invoked us with the seeded data
+  }
+  if(firstSnap){
+    firstSnap=false;
+    const saved=localStorage.getItem('wc_me_'+room);
+    if(saved){
+      me=JSON.parse(saved);
+      if(!players.find(p=>p.id===me.id)){ try{await putPlayer(me.id,me.name);}catch(e){} }
+      document.getElementById('topright').style.display='flex';
+      document.getElementById('meName').textContent=me.name;
+      document.getElementById('tabs').style.display='flex';
+      render();
+    } else { nameGate(); }
+  } else { safeRender(); }
+});
+</script>
+</body>
+</html>
