@@ -224,17 +224,29 @@ const FLAGS={
   "Germany":["🇩🇪","GER"],"Paraguay":["🇵🇾","PAR"],"Netherlands":["🇳🇱","NED"],"Morocco":["🇲🇦","MAR"],
   "Ivory Coast":["🇨🇮","CIV"],"Norway":["🇳🇴","NOR"],"France":["🇫🇷","FRA"],"Sweden":["🇸🇪","SWE"],
   "Mexico":["🇲🇽","MEX"],"Ecuador":["🇪🇨","ECU"],"England":["🏴","ENG"],"Argentina":["🇦🇷","ARG"],
-  "Spain":["🇪🇸","ESP"],"USA":["🇺🇸","USA"],"Portugal":["🇵🇹","POR"],"Belgium":["🇧🇪","BEL"],"Croatia":["🇭🇷","CRO"],"Uruguay":["🇺🇾","URU"]
+  "Spain":["🇪🇸","ESP"],"USA":["🇺🇸","USA"],"Portugal":["🇵🇹","POR"],"Belgium":["🇧🇪","BEL"],"Croatia":["🇭🇷","CRO"],"Uruguay":["🇺🇾","URU"],
+  "DR Congo":["🇨🇩","COD"],"Senegal":["🇸🇳","SEN"],"Bosnia & Herz.":["🇧🇦","BIH"],"Austria":["🇦🇹","AUT"],"Switzerland":["🇨🇭","SUI"],
+  "Algeria":["🇩🇿","ALG"],"Australia":["🇦🇺","AUS"],"Egypt":["🇪🇬","EGY"],"Cape Verde":["🇨🇻","CPV"],"Colombia":["🇨🇴","COL"],"Ghana":["🇬🇭","GHA"]
 };
 const flagOf=n=>(FLAGS[n]&&FLAGS[n][0])||"⚽";
 const codeOf=n=>(FLAGS[n]&&FLAGS[n][1])||String(n).slice(0,3).toUpperCase();
 const SEED=[
-  {id:"s1",home:"South Africa",away:"Canada",  kickoff:"2026-06-28T19:00:00Z"},
-  {id:"s2",home:"Brazil",      away:"Japan",   kickoff:"2026-06-29T17:00:00Z"},
-  {id:"s3",home:"Germany",     away:"Paraguay",kickoff:"2026-06-29T20:30:00Z"},
-  {id:"s4",home:"Netherlands", away:"Morocco", kickoff:"2026-06-30T01:00:00Z"},
-  {id:"s5",home:"Ivory Coast", away:"Norway",  kickoff:"2026-06-30T17:00:00Z"},
-  {id:"s6",home:"France",      away:"Sweden",  kickoff:"2026-06-30T21:00:00Z"}
+  {id:"s1",home:"South Africa",away:"Canada",       kickoff:"2026-06-28T19:00:00Z"},
+  {id:"s2",home:"Brazil",      away:"Japan",        kickoff:"2026-06-29T17:00:00Z"},
+  {id:"s3",home:"Germany",     away:"Paraguay",     kickoff:"2026-06-29T20:30:00Z"},
+  {id:"s4",home:"Netherlands", away:"Morocco",      kickoff:"2026-06-30T01:00:00Z"},
+  {id:"s5",home:"Ivory Coast", away:"Norway",       kickoff:"2026-06-30T17:00:00Z"},
+  {id:"s6",home:"France",      away:"Sweden",       kickoff:"2026-06-30T21:00:00Z"},
+  {id:"s7",home:"Mexico",      away:"Ecuador",      kickoff:"2026-07-01T01:00:00Z"},
+  {id:"s8",home:"England",     away:"DR Congo",     kickoff:"2026-07-01T16:00:00Z"},
+  {id:"s9",home:"Belgium",     away:"Senegal",      kickoff:"2026-07-01T20:00:00Z"},
+  {id:"s10",home:"USA",        away:"Bosnia & Herz.",kickoff:"2026-07-02T00:00:00Z"},
+  {id:"s11",home:"Spain",      away:"Austria",      kickoff:"2026-07-02T19:00:00Z"},
+  {id:"s12",home:"Portugal",   away:"Croatia",      kickoff:"2026-07-02T23:00:00Z"},
+  {id:"s13",home:"Switzerland",away:"Algeria",      kickoff:"2026-07-03T03:00:00Z"},
+  {id:"s14",home:"Australia",  away:"Egypt",        kickoff:"2026-07-03T18:00:00Z"},
+  {id:"s15",home:"Argentina",  away:"Cape Verde",   kickoff:"2026-07-03T22:00:00Z"},
+  {id:"s16",home:"Colombia",   away:"Ghana",        kickoff:"2026-07-04T01:30:00Z"}
 ];
 
 /* ============================================================ STATE ============================================================ */
@@ -260,16 +272,17 @@ const hasResult=m=>m.hs!=null&&m.as!=null;
 const fmtTime=iso=>new Date(iso).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 const dayKey=iso=>new Date(iso).toLocaleDateString([], {weekday:'long',day:'numeric',month:'long'});
 const sign=n=>n>0?1:(n<0?-1:0);
-function pointsFor(p,m){ if(!p||!hasResult(m))return null; if(p.h===m.hs&&p.a===m.as)return 3; return sign(p.h-p.a)===sign(m.hs-m.as)?1:0; }
-function bonusFor(p,m){ // +1 only on draws: player tipped a draw AND picked the team that advanced
-  if(!p||!hasResult(m)) return 0;
-  if(m.hs!==m.as) return 0;      // not a draw
-  if(!m.adv) return 0;           // host hasn't said who advanced
-  if(p.h!==p.a) return 0;        // player didn't tip a draw
-  if(!p.adv) return 0;           // player didn't pick a team
-  return p.adv===m.adv ? 1 : 0;
+/* ============ ★ CHANGED #1 — winner-based scoring (search "★ CHANGED") ============ */
+function resultWinner(m){ if(!hasResult(m))return null; if(m.hs>m.as)return 'home'; if(m.as>m.hs)return 'away'; return m.adv||null; }
+function predWinner(p){ if(!p)return null; if(p.h>p.a)return 'home'; if(p.a>p.h)return 'away'; return p.adv||null; }
+function pointsFor(p,m){
+  if(!p||!hasResult(m)) return null;
+  if(p.h===m.hs && p.a===m.as) return 3;          // exact score
+  const pw=predWinner(p), rw=resultWinner(m);
+  return (pw && rw && pw===rw) ? 1 : 0;           // correct winner / advancing team
 }
-function totalPts(p,m){ const b=pointsFor(p,m); return b==null?null:b+bonusFor(p,m); }
+const totalPts=pointsFor;                          // winner rule already folded in
+/* ============ ★ CHANGED #1 end ============ */
 const advTeam=(m,adv)=>adv==='home'?m.home:m.away;
 function advButtonsHTML(m,sel){
   return `<div class="advrow"><span class="advlbl">Wins on pens</span>
@@ -374,12 +387,14 @@ function updateAdvVisibility(m){
 async function saveTip(matchId){
   const h=parseInt(document.getElementById('h_'+matchId).value,10), a=parseInt(document.getElementById('a_'+matchId).value,10);
   if(isNaN(h)||isNaN(a)||h<0||a<0){toast('Enter a score for both teams',true);return;}
+  /* ★ CHANGED #2 — a draw tip must name who wins on penalties */
   const isDraw=h===a;
   const adv=isDraw ? (advSel[matchId]||predictions[matchId]?.[me.id]?.adv||null) : null;
+  if(isDraw && !adv){ toast('It\u2019s a draw — tap who wins on penalties',true); return; }
   const pred={h,a}; if(adv)pred.adv=adv;
   try{ await putPred(matchId,me.id,pred); (predictions[matchId]||(predictions[matchId]={}))[me.id]=pred;
     const b=document.getElementById('save_'+matchId); if(b){b.classList.add('saved');b.textContent='Saved ✓';}
-    toast(isDraw&&!adv?'Saved — tap a team for the penalty bonus':'Tip saved'); }
+    toast('Tip saved'); }
   catch(e){ toast('Could not save — check connection',true); }
 }
 async function delMatch(matchId){
@@ -389,6 +404,7 @@ async function delMatch(matchId){
 }
 function boardRows(){
   return players.map(p=>{ let pts=0,exact=0,correct=0,played=0;
+    /* ★ CHANGED #3 — points use the winner rule (totalPts); Exact/Right tallies use base */
     for(const m of matches){ if(!hasResult(m))continue; const t=predictions[m.id]?.[p.id]; if(!t)continue; played++; const base=pointsFor(t,m); pts+=totalPts(t,m); if(base===3)exact++; else if(base===1)correct++; }
     return {id:p.id,name:p.name,pts,exact,correct,played};
   }).sort((a,b)=>b.pts-a.pts||b.exact-a.exact||a.name.localeCompare(b.name));
@@ -403,7 +419,7 @@ function boardView(){
       <div class="lb-cell">${r.exact}</div><div class="lb-cell">${r.correct}</div><div class="lb-total">${r.pts}</div></div>`;}).join('');
   return `<div class="lb"><div class="lb-head"><div class="r">#</div><div>Player</div><div class="r">Exact</div><div class="r">Right</div><div class="r">Pts</div></div>${body}</div>
     <div class="lb-legend"><span><span class="k" style="background:var(--amber)"></span><b>Exact</b> — perfect scoreline (3 pts)</span>
-      <span><span class="k" style="background:var(--green)"></span><b>Right</b> — correct win/draw/loss (1 pt)</span></div>
+      <span><span class="k" style="background:var(--green)"></span><b>Right</b> — correct winner (1 pt)</span></div>
     ${anyResult?'':'<div class="footer" style="margin-top:10px">Points appear once results are entered on finished matches.</div>'}`;
 }
 
@@ -481,6 +497,7 @@ function matchModal(m){
   };
 }
 function resultModal(m){
+  /* ★ CHANGED #4 — when the final score is a draw, host picks who advanced */
   resSel = m.adv||null;
   overlay(`<div class="modal"><h2>Final score</h2><p>${esc(m.home)} vs ${esc(m.away)}. This decides everyone's points.</p>
     <div class="row2"><div class="field"><label>${esc(codeOf(m.home))}</label><input id="rh" type="number" inputmode="numeric" min="0" max="99" value="${m.hs!=null?m.hs:''}"></div>
@@ -514,8 +531,11 @@ document.addEventListener('focusout',()=>{ if(pendingRender && !busy()){ pending
 let seeding=false;
 subscribe(async v=>{
   applyState(v);
-  if(matches.length===0 && !seeding){ seeding=true;
-    try{ for(const s of SEED){ await putMatch(s.id,{home:s.home,away:s.away,kickoff:s.kickoff,hs:null,as:null}); } }catch(e){}
+  /* ★ CHANGED #5 — add any seed fixtures that aren't in the game yet (tops up existing games; results are never overwritten) */
+  const have=new Set(matches.map(m=>m.id));
+  const missing=SEED.filter(s=>!have.has(s.id));
+  if(missing.length && !seeding){ seeding=true;
+    try{ for(const s of missing){ await putMatch(s.id,{home:s.home,away:s.away,kickoff:s.kickoff,hs:null,as:null}); } }catch(e){}
     seeding=false;
     if(!db){ return; } // local: write() already re-invoked us with the seeded data
   }
