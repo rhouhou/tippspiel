@@ -10,12 +10,12 @@ A lightweight, real-time football prediction game for a group of friends. No acc
 
 ## Features
 
-- **Zero friction to join** — no registration or password; a name is all it takes.
-- **Real-time shared leaderboard** — predictions and standings sync live across everyone's devices.
-- **Score predictions with kick-off locking** — tips are editable until a match starts, then locked, after which everyone's picks are revealed.
-- **Knockout-aware scoring** — on a draw prediction, players also pick who advances on penalties.
-- **Host tools** — add, edit or remove fixtures and enter final results directly in the app.
-- **Timezone-aware** — kick-off times are stored in UTC and shown in each viewer's local time.
+- **Zero friction to join** - no registration or password; a name is all it takes.
+- **Real-time shared leaderboard** - predictions and standings sync live across everyone's devices.
+- **Score predictions with kick-off locking** - tips are editable until a match starts, then locked, after which everyone's picks are revealed.
+- **Knockout-aware scoring** - on a draw prediction, players also pick who advances on penalties.
+- **Host tools** - add, edit or remove fixtures and enter final results directly in the app.
+- **Timezone-aware** - kick-off times are stored in UTC and shown in each viewer's local time.
 - **Pre-loaded** with the 2026 World Cup Round of 32 fixtures.
 
 ## Scoring
@@ -30,10 +30,10 @@ The "winner" is taken automatically from a non-draw prediction, or from the play
 
 ## Tech stack
 
-- **Vanilla JavaScript, HTML & CSS** — no framework, no build step; the whole app is a single self-contained file.
-- **Firebase Realtime Database** — shared state and live sync across clients.
-- **Firebase Anonymous Auth** — silent, login-free identity so access can be gated by security rules.
-- **GitHub Pages** — static hosting.
+- **Vanilla JavaScript, HTML & CSS** - no framework, no build step; the whole app is a single self-contained file.
+- **Firebase Realtime Database** - shared state and live sync across clients.
+- **Firebase Anonymous Auth** - silent, login-free identity so access can be gated by security rules.
+- **GitHub Pages** - static hosting.
 
 ## Architecture in brief
 
