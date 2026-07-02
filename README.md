@@ -4,9 +4,7 @@ A lightweight, real-time football prediction game for a group of friends. No acc
 
 🔗 **Live:** https://rhouhou.github.io/tippspiel/
 
-<!-- Add a screenshot to make this pop:
-     take a screenshot of the app, drop it in the repo as screenshot.png, then this line shows it -->
-<!-- ![Matchday screenshot](screenshot.png) -->
+ ![Matchday screenshot](screenshot.png)
 
 ---
 
