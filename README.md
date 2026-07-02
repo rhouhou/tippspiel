@@ -1,4 +1,4 @@
-# ⚽ Matchday — World Cup 2026 Tippspiel
+# ⚽ Matchday - World Cup 2026 Tippspiel
 
 A lightweight, real-time football prediction game for a group of friends. No accounts, no sign-up: players open a link, type a name, and start predicting scores. Everyone shares one live leaderboard that updates as results come in.
 
@@ -49,7 +49,7 @@ State lives in a single Realtime Database tree (`rooms/{room}/{matches,players,p
 
 ## A note on the exposed Firebase config
 
-The Firebase config in `index.html` is intentionally public — this is by design for Firebase web apps; the API key identifies the project but grants no access on its own. Access is controlled entirely by the database **security rules**, not by hiding the key. This is standard practice for client-side Firebase.
+The Firebase config in `index.html` is intentionally public - this is by design for Firebase web apps; the API key identifies the project but grants no access on its own. Access is controlled entirely by the database **security rules**, not by hiding the key. This is standard practice for client-side Firebase.
 
 ---
 
